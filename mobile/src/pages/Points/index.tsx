@@ -105,35 +105,37 @@ const Points = () => {
       <Text style={styles.description}>Encontre no mapa um ponto de coleta.</Text>
 
       <View style={styles.mapContainer}>
-        {initPosition[0] !== 0 && (<MapView 
-          style={styles.map}
-          loadingEnabled={initPosition[0] === 0}
-          initialRegion={{
-            latitude: initPosition[0],
-            longitude: initPosition[1],
-            latitudeDelta: 0.014,
-            longitudeDelta: 0.014
-        }}>
-          {points.map((item: Point) => (
-            <Marker
-              style={styles.mapMarker}
-              coordinate={{
-                latitude: item.latitude,
-                longitude: item.longitude,
-              }}
-              onPress={() => handleNavigateToDetail(item.id)}
-              key={item.id}
-            >
-              <View style={styles.mapMarkerContainer}>
-                <Image 
-                  style={styles.mapMarkerImage}
-                  source={{uri: item.image_url}}
-                />
-                <Text style={styles.mapMarkerTitle}>{item.name}</Text>
-              </View>
-            </Marker>
-          ))}
-        </MapView>)}
+        {initPosition[0] !== 0 && (
+          <MapView
+            style={styles.map}
+            loadingEnabled={initPosition[0] === 0}
+            initialRegion={{
+              latitude: initPosition[0],
+              longitude: initPosition[1],
+              latitudeDelta: 0.014,
+              longitudeDelta: 0.014
+          }}>
+            {points.map((item: Point) => (
+              <Marker
+                style={styles.mapMarker}
+                coordinate={{
+                  latitude: item.latitude,
+                  longitude: item.longitude,
+                }}
+                onPress={() => handleNavigateToDetail(item.id)}
+                key={item.id}
+              >
+                <View style={styles.mapMarkerContainer}>
+                  <Image 
+                    style={styles.mapMarkerImage}
+                    source={{uri: item.image_url}}
+                  />
+                  <Text style={styles.mapMarkerTitle}>{item.name}</Text>
+                </View>
+              </Marker>
+            ))}
+          </MapView>
+        )}
       </View>
     </View>
     <View style={styles.itemsContainer}>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState} from 'react'
-import {View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView, Linking} from 'react-native'
+import {View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView, Linking, Platform} from 'react-native'
+import MapView, {Marker} from 'react-native-maps'
 import { Feather as Icon, FontAwesome } from '@expo/vector-icons'
 import { useNavigation, useRoute} from '@react-navigation/native'
 import {RectButton} from 'react-native-gesture-handler'
@@ -20,6 +21,8 @@ interface Data{
     whatsapp: string,
     city: string,
     uf: string,
+    latitude: number,
+    longitude: number
   },
   items: {
     title: string
@@ -55,6 +58,14 @@ const Detail = () => {
     Linking.openURL(`whatsapp://send?phone=${data.point.whatsapp}`)
   }
 
+  function handleOpenMap(){
+    if(Platform.OS === 'ios'){
+      Linking.openURL(`http://maps.apple.com/?daddr=${data.point.latitude},${data.point.longitude}`)
+    } else {
+      Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${data.point.latitude},${data.point.longitude}`)
+    }
+  }
+
   if (!data.point){
     return null
   }
@@ -71,9 +82,28 @@ const Detail = () => {
       />
       <Text style={styles.pointName}>{data.point.name}</Text>
       <Text style={styles.pointItems}>{data.items.map(item => item.title).join(', ')}</Text>
-      <View style={styles.address}>
-        <Text style={styles.addressTitle}>Endereço</Text>
-        <Text style={styles.addressContent}>{`${data.point.city}, ${data.point.uf}`}</Text>
+      <View style={styles.mapContainer}>
+        {data.point.latitude !== undefined && (
+          <MapView
+            onPress={handleOpenMap}
+            style={styles.map}
+            initialRegion={{
+              latitude: data.point.latitude,
+              longitude: data.point.longitude,
+              latitudeDelta: 0.014,
+              longitudeDelta: 0.014
+          }}
+          >
+            <Marker
+              pinColor='#34CB79'
+              onPress={handleOpenMap}
+              coordinate={{
+                latitude: data.point.latitude,
+                longitude: data.point.longitude,
+              }}
+            />
+          </MapView>
+        )}
       </View>
     </View>
     <View style={styles.footer}>
@@ -120,21 +150,17 @@ const styles = StyleSheet.create({
     color: '#6C6C80'
   },
 
-  address: {
-    marginTop: 32,
-  },
-  
-  addressTitle: {
-    color: '#322153',
-    fontFamily: 'Roboto_500Medium',
-    fontSize: 16,
+  mapContainer: {
+    flex: 1,
+    width: '100%',
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginTop: 16,
   },
 
-  addressContent: {
-    fontFamily: 'Roboto_400Regular',
-    lineHeight: 24,
-    marginTop: 8,
-    color: '#6C6C80'
+  map: {
+    width: '100%',
+    height: '100%',
   },
 
   footer: {
